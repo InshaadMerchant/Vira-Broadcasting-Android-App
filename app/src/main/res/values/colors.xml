@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FFE53E3E</color>
+    <color name="purple_700">#FFC53030</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- VIRA Brand Colors -->
+    <color name="vira_red">#FFE53E3E</color>
+    <color name="vira_dark_red">#FFC53030</color>
+    <color name="vira_light_red">#FFFEB2B2</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#FF1A202C</color>
+    <color name="text_secondary">#FF4A5568</color>
+    <color name="text_tertiary">#FF718096</color>
+    
+    <!-- Background Colors -->
+    <color name="background_primary">#FFFFFFFF</color>
+    <color name="background_secondary">#FFF7FAFC</color>
+    <color name="background_tertiary">#FFEDF2F7</color>
+    
+    <!-- Status Colors -->
+    <color name="success_green">#FF48BB78</color>
+    <color name="warning_orange">#FFED8936</color>
+    <color name="info_blue">#FF4299E1</color>
+</resources>

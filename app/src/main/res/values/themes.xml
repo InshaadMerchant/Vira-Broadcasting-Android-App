@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.ViraBroadcasting" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <!-- Material3 themes automatically handle colors based on the color scheme -->
+    </style>
+</resources>
