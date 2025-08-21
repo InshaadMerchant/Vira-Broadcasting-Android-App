@@ -118,7 +118,8 @@ fun HomeScreen(
                     text = category.name,
                     isSelected = selectedCategory?.id == category.id,
                     onClick = { viewModel.selectCategory(category) },
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    categoryColor = category.color
                 )
             }
         }

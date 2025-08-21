@@ -14,7 +14,7 @@ import com.example.virabroadcasting_android.ui.theme.Virabroadcasting_androidThe
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // enableEdgeToEdge() // Commented out to fix status bar overlap
         setContent {
             Virabroadcasting_androidTheme {
                 Surface(

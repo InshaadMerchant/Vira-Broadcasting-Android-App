@@ -202,12 +202,26 @@ class NewsRepository(
      * Convert WordPress category to NewsCategory
      */
     private fun Category.toNewsCategory(): NewsCategory {
+        val categoryColor = when (name.lowercase()) {
+            "sports" -> androidx.compose.ui.graphics.Color(0xFF4CAF50) // Green
+            "politics" -> androidx.compose.ui.graphics.Color(0xFF2196F3) // Blue
+            "latest news" -> androidx.compose.ui.graphics.Color(0xFFF44336) // Red
+            "business" -> androidx.compose.ui.graphics.Color(0xFFFFEB3B) // Yellow
+            "entertainment" -> androidx.compose.ui.graphics.Color(0xFF9C27B0) // Purple
+            "health and wellness" -> androidx.compose.ui.graphics.Color(0xFF00BCD4) // Cyan
+            "science" -> androidx.compose.ui.graphics.Color(0xFF795548) // Brown
+            "environment" -> androidx.compose.ui.graphics.Color(0xFF8BC34A) // Light Green
+            "arts" -> androidx.compose.ui.graphics.Color(0xFFFF9800) // Orange
+            else -> androidx.compose.ui.graphics.Color(0xFF9E9E9E) // Gray for others
+        }
+        
         return NewsCategory(
             id = id,
             name = name,
             slug = slug,
             description = description,
-            postCount = count
+            postCount = count,
+            color = categoryColor
         )
     }
 }

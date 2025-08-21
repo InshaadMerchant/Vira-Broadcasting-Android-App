@@ -348,18 +348,31 @@ fun ViraCategoryChip(
     text: String,
     isSelected: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    categoryColor: androidx.compose.ui.graphics.Color? = null
 ) {
+    val backgroundColor = when {
+        isSelected -> ViraRed
+        categoryColor != null -> categoryColor.copy(alpha = 0.2f) // Light version of category color
+        else -> BackgroundSecondary
+    }
+    
+    val textColor = when {
+        isSelected -> Color.White
+        categoryColor != null -> categoryColor
+        else -> TextSecondary
+    }
+    
     Surface(
         modifier = modifier.clickable { onClick() },
         shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) ViraRed else BackgroundSecondary,
-        border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE2E8F0))
+        color = backgroundColor,
+        border = if (isSelected) null else BorderStroke(1.dp, categoryColor ?: Color(0xFFE2E8F0))
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
-            color = if (isSelected) Color.White else TextSecondary,
+            color = textColor,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
         )
@@ -374,6 +387,18 @@ fun ViraNewsCard(
     imageUrl: String? = null,
     onClick: () -> Unit
 ) {
+    val categoryColor = when (category.lowercase()) {
+        "sports" -> androidx.compose.ui.graphics.Color(0xFF4CAF50) // Green
+        "politics" -> androidx.compose.ui.graphics.Color(0xFF2196F3) // Blue
+        "latest news" -> androidx.compose.ui.graphics.Color(0xFFF44336) // Red
+        "business" -> androidx.compose.ui.graphics.Color(0xFFFFEB3B) // Yellow
+        "entertainment" -> androidx.compose.ui.graphics.Color(0xFF9C27B0) // Purple
+        "health and wellness" -> androidx.compose.ui.graphics.Color(0xFF00BCD4) // Cyan
+        "science" -> androidx.compose.ui.graphics.Color(0xFF795548) // Brown
+        "environment" -> androidx.compose.ui.graphics.Color(0xFF8BC34A) // Light Green
+        "arts" -> androidx.compose.ui.graphics.Color(0xFFFF9800) // Orange
+        else -> ViraRed // Default color
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -409,14 +434,14 @@ fun ViraNewsCard(
             ) {
                 // Category chip
                 Surface(
-                    color = ViraLightRed,
+                    color = categoryColor.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         text = category,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        color = ViraRed,
+                        color = categoryColor,
                         fontWeight = FontWeight.Medium
                     )
                 }
