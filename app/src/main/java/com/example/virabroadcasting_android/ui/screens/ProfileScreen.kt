@@ -243,13 +243,7 @@ fun ProfileScreen(
                         )
                         
                         Divider(color = Color(0xFFE2E8F0), thickness = 1.dp)
-                        
-                        // Test WordPress Connection
-                        SettingsRow(
-                            icon = Icons.Default.Wifi,
-                            title = "Test WordPress Connection",
-                            onClick = { onTestConnectionClick() }
-                        )
+
                     }
                 }
             }

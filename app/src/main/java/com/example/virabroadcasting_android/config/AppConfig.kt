@@ -4,7 +4,7 @@ object AppConfig {
     
     // WordPress Configuration
     // TODO: Replace with your actual WordPress site URL
-    const val WORDPRESS_BASE_URL = "staging-5601-virabroadcasting.wpcomstaging.com"
+    const val WORDPRESS_BASE_URL = "https://your-wordpress-site.com"
     const val WORDPRESS_API_BASE_URL = "$WORDPRESS_BASE_URL/wp-json/"
     
     // API Configuration
