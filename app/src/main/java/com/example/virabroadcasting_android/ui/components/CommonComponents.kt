@@ -21,6 +21,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.virabroadcasting_android.ui.theme.*
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import com.example.virabroadcasting_android.R
 
 @Composable
 fun ViraHeader(
@@ -362,79 +372,73 @@ fun ViraNewsCard(
     category: String,
     date: String,
     imageUrl: String? = null,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = BackgroundPrimary
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(BackgroundSecondary)
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Image section (if available)
+            if (imageUrl != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "News image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.placeholder_image),
+                    error = painterResource(id = R.drawable.placeholder_image)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            
+            // Category and date row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Placeholder for image - in real app, use Coil to load imageUrl
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(BackgroundTertiary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Image,
-                        contentDescription = "News Image",
-                        modifier = Modifier.size(48.dp),
-                        tint = TextTertiary
-                    )
-                }
-                
-                // Category tag
+                // Category chip
                 Surface(
-                    modifier = Modifier
-                        .padding(12.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (category == "Politics") ViraRed else InfoBlue
+                    color = ViraLightRed,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         text = category,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = ViraRed,
                         fontWeight = FontWeight.Medium
                     )
                 }
-            }
-            
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = TextPrimary,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 22.sp
-                )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
+                // Date
                 Text(
                     text = date,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextTertiary
                 )
             }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Title
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 24.sp
+            )
         }
     }
 }
