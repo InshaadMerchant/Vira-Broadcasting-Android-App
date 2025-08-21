@@ -94,6 +94,12 @@ fun ViraNavigation() {
                 },
                 onNewsItemClick = { newsId ->
                     // Handle news item click
+                },
+                onSignOut = {
+                    // Navigate to login and clear the entire back stack
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
@@ -145,6 +151,12 @@ fun ViraNavigation() {
                 },
                 onTestConnectionClick = {
                     navController.navigate("test_connection")
+                },
+                onSignOutClick = {
+                    // Navigate to login and clear the entire back stack
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
@@ -166,7 +178,8 @@ fun MainAppScreen(
     onNavigate: (String) -> Unit,
     onProfileClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    onNewsItemClick: (String) -> Unit
+    onNewsItemClick: (String) -> Unit,
+    onSignOut: () -> Unit
 ) {
     Scaffold(
         bottomBar = {
@@ -204,7 +217,8 @@ fun MainAppScreen(
                     onBackClick = { onNavigate("home") },
                     onEditProfileClick = { /* Handle edit profile */ },
                     onSettingClick = { /* Handle setting */ },
-                    onTestConnectionClick = { /* Will be handled by navigation */ }
+                    onTestConnectionClick = { /* Will be handled by navigation */ },
+                    onSignOutClick = onSignOut
                 )
             }
         }

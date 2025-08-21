@@ -23,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -40,7 +42,8 @@ fun ProfileScreen(
     onBackClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onSettingClick: (String) -> Unit,
-    onTestConnectionClick: () -> Unit
+    onTestConnectionClick: () -> Unit,
+    onSignOutClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -243,6 +246,32 @@ fun ProfileScreen(
                         )
                         
                         Divider(color = Color(0xFFE2E8F0), thickness = 1.dp)
+                        
+                        // Sign Out Button
+                        Button(
+                            onClick = onSignOutClick,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = ViraRed
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Logout,
+                                contentDescription = "Sign Out",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Sign Out",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
 
                     }
                 }
