@@ -8,7 +8,7 @@ object WordPressConfig {
     
     // TODO: REPLACE WITH YOUR ACTUAL WORDPRESS SITE URL
     // Remove the "https://" and trailing slash - just the domain
-    const val WORDPRESS_DOMAIN = "https://staging-5601-virabroadcasting.wpcomstaging.com/"
+    const val WORDPRESS_DOMAIN = "staging-5601-virabroadcasting.wpcomstaging.com"
     
     // Protocol (http or https)
     const val WORDPRESS_PROTOCOL = "https"
@@ -88,7 +88,7 @@ object WordPressConfig {
      * Validate WordPress URL configuration
      */
     fun validateConfiguration(): Boolean {
-        return WORDPRESS_DOMAIN != "your-wordpress-site.com" && 
+        return WORDPRESS_DOMAIN == "staging-5601-virabroadcasting.wpcomstaging.com" &&
                WORDPRESS_DOMAIN.isNotBlank()
     }
     

@@ -24,7 +24,7 @@ data class WordPressPost(
     val sticky: Boolean,
     val template: String,
     val format: String,
-    val meta: List<Any>,
+    val meta: Map<String, Any>? = null,
     val categories: List<Int>,
     val tags: List<Int>,
     val _embedded: Embedded? = null

@@ -15,7 +15,8 @@ interface WordPressApiService {
         @Query("per_page") perPage: Int = 10,
         @Query("_embed") embed: Boolean = true,
         @Query("orderby") orderBy: String = "date",
-        @Query("order") order: String = "desc"
+        @Query("order") order: String = "desc",
+        @Query("status") status: String = "publish"
     ): Response<List<WordPressPost>>
     
     // Get posts by category
@@ -53,7 +54,8 @@ interface WordPressApiService {
         @Query("_embed") embed: Boolean = true,
         @Query("per_page") perPage: Int = 20,
         @Query("orderby") orderBy: String = "date",
-        @Query("order") order: String = "desc"
+        @Query("order") order: String = "desc",
+        @Query("status") status: String = "publish"
     ): Response<List<WordPressPost>>
     
     // Get all categories

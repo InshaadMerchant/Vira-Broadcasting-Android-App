@@ -39,7 +39,8 @@ import com.example.virabroadcasting_android.ui.theme.*
 fun ProfileScreen(
     onBackClick: () -> Unit,
     onEditProfileClick: () -> Unit,
-    onSettingClick: (String) -> Unit
+    onSettingClick: (String) -> Unit,
+    onTestConnectionClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -239,6 +240,15 @@ fun ProfileScreen(
                             icon = Icons.Default.Help,
                             title = "Help & Support",
                             onClick = { onSettingClick("help") }
+                        )
+                        
+                        Divider(color = Color(0xFFE2E8F0), thickness = 1.dp)
+                        
+                        // Test WordPress Connection
+                        SettingsRow(
+                            icon = Icons.Default.Wifi,
+                            title = "Test WordPress Connection",
+                            onClick = { onTestConnectionClick() }
                         )
                     }
                 }

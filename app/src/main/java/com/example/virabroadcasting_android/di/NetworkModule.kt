@@ -1,6 +1,7 @@
-package com.example.virabroadcasting_android.data.api
+package com.example.virabroadcasting_android.di
 
 import com.example.virabroadcasting_android.config.WordPressConfig
+import com.example.virabroadcasting_android.data.api.WordPressApiService
 import com.example.virabroadcasting_android.data.repository.NewsRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

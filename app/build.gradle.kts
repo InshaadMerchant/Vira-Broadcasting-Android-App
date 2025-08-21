@@ -79,7 +79,8 @@ dependencies {
     
     // Pull to refresh
     implementation("androidx.compose.material:material:1.6.3")
-    
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

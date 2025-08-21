@@ -27,7 +27,12 @@ class NewsRepository(
             val response = apiService.getPosts(page = page, perPage = perPage)
             if (response.isSuccessful) {
                 val posts = response.body() ?: emptyList()
+                println("🔍 DEBUG: Received ${posts.size} posts from API")
+                println("🔍 DEBUG: First post ID: ${posts.firstOrNull()?.id}")
+                println("🔍 DEBUG: First post title: ${posts.firstOrNull()?.displayTitle}")
+                
                 val articles = posts.map { it.toNewsArticle() }
+                println("🔍 DEBUG: Converted to ${articles.size} articles")
                 
                 // Cache the results
                 val cacheKey = "latest_$page"
@@ -35,10 +40,13 @@ class NewsRepository(
                 
                 articles
             } else {
+                println("❌ DEBUG: API response not successful: ${response.code()}")
                 // Return cached data if available
                 postsCache["latest_$page"] ?: emptyList()
             }
         } catch (e: Exception) {
+            println("❌ DEBUG: Exception in getLatestNews: ${e.message}")
+            e.printStackTrace()
             // Return cached data if available
             postsCache["latest_$page"] ?: emptyList()
         }

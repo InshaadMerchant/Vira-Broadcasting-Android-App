@@ -142,6 +142,18 @@ fun ViraNavigation() {
                 },
                 onSettingClick = { setting ->
                     // Handle setting click
+                },
+                onTestConnectionClick = {
+                    navController.navigate("test_connection")
+                }
+            )
+        }
+        
+        // Test Connection Screen
+        composable("test_connection") {
+            TestConnectionScreen(
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -191,7 +203,8 @@ fun MainAppScreen(
                 ProfileScreen(
                     onBackClick = { onNavigate("home") },
                     onEditProfileClick = { /* Handle edit profile */ },
-                    onSettingClick = { /* Handle setting */ }
+                    onSettingClick = { /* Handle setting */ },
+                    onTestConnectionClick = { /* Will be handled by navigation */ }
                 )
             }
         }
