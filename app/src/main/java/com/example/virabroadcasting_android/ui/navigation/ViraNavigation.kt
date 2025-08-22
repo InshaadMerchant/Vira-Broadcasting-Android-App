@@ -17,6 +17,9 @@ fun ViraNavigation() {
     val navController = rememberNavController()
     var currentRoute by remember { mutableStateOf("splash") }
     
+    // Use the singleton UserRepository directly
+    val userRepository = com.example.virabroadcasting_android.data.repository.UserRepository
+    
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -57,7 +60,9 @@ fun ViraNavigation() {
         // Create Account Screen
         composable("create_account") {
             CreateAccountScreen(
-                onCreateAccountClick = {
+                onCreateAccountClick = { fullName, email, phone, location ->
+                    // Create user and save to repository
+                    userRepository.createUser(fullName, email, phone, location)
                     navController.navigate("home") {
                         popUpTo("create_account") { inclusive = true }
                     }
@@ -96,11 +101,13 @@ fun ViraNavigation() {
                     // Handle news item click
                 },
                 onSignOut = {
-                    // Navigate to login and clear the entire back stack
+                    // Clear user data and navigate to login
+                    userRepository.clearUser()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
                     }
-                }
+                },
+                userRepository = userRepository
             )
         }
         
@@ -140,11 +147,12 @@ fun ViraNavigation() {
         // Profile Screen
         composable("profile") {
             ProfileScreen(
+                currentUser = userRepository.getUser(),
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onEditProfileClick = {
-                    // Handle edit profile click
+                    navController.navigate("edit_profile")
                 },
                 onSettingClick = { setting ->
                     // Handle setting click
@@ -153,7 +161,8 @@ fun ViraNavigation() {
                     navController.navigate("test_connection")
                 },
                 onSignOutClick = {
-                    // Navigate to login and clear the entire back stack
+                    // Clear user data and navigate to login
+                    userRepository.clearUser()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
                     }
@@ -169,6 +178,22 @@ fun ViraNavigation() {
                 }
             )
         }
+        
+        // Edit Profile Screen
+        composable("edit_profile") {
+            EditProfileScreen(
+                currentUser = userRepository.getUser(),
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onSaveProfile = { fullName, email, phone, location ->
+                    println("🔐 DEBUG: Navigation - Saving profile: $fullName, $email, $phone, $location")
+                    userRepository.updateUserProfile(fullName, email, phone, location)
+                    println("🔐 DEBUG: Navigation - Profile saved, navigating back")
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
@@ -179,7 +204,8 @@ fun MainAppScreen(
     onProfileClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onNewsItemClick: (String) -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    userRepository: com.example.virabroadcasting_android.data.repository.UserRepository
 ) {
     Scaffold(
         bottomBar = {
@@ -214,8 +240,9 @@ fun MainAppScreen(
             }
             "profile" -> {
                 ProfileScreen(
+                    currentUser = userRepository.getUser(),
                     onBackClick = { onNavigate("home") },
-                    onEditProfileClick = { /* Handle edit profile */ },
+                    onEditProfileClick = { /* Will be handled by navigation */ },
                     onSettingClick = { /* Handle setting */ },
                     onTestConnectionClick = { /* Will be handled by navigation */ },
                     onSignOutClick = onSignOut

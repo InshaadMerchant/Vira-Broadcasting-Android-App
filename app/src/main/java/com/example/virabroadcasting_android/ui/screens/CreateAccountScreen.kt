@@ -14,7 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -30,12 +32,14 @@ import com.example.virabroadcasting_android.ui.theme.*
 
 @Composable
 fun CreateAccountScreen(
-    onCreateAccountClick: () -> Unit,
+    onCreateAccountClick: (String, String, String, String) -> Unit,
     onSignInClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -100,6 +104,27 @@ fun CreateAccountScreen(
             modifier = Modifier.padding(bottom = 24.dp)
         )
         
+        // Phone Field
+        ViraTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = "Phone Number",
+            placeholder = "Enter your phone number",
+            leadingIcon = Icons.Default.Phone,
+            keyboardType = KeyboardType.Phone,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        
+        // Location Field
+        ViraTextField(
+            value = location,
+            onValueChange = { location = it },
+            label = "Location",
+            placeholder = "Enter your location",
+            leadingIcon = Icons.Default.LocationOn,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        
         // Password Field
         ViraTextField(
             value = password,
@@ -125,8 +150,8 @@ fun CreateAccountScreen(
             text = "Create Account",
             onClick = {
                 isLoading = true
-                // Simulate account creation process
-                onCreateAccountClick()
+                // Create account with user data
+                onCreateAccountClick(fullName, email, phone, location)
             },
             isLoading = isLoading,
             modifier = Modifier.padding(bottom = 32.dp)

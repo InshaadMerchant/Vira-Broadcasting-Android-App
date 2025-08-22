@@ -39,12 +39,17 @@ import com.example.virabroadcasting_android.ui.theme.*
 
 @Composable
 fun ProfileScreen(
+    currentUser: com.example.virabroadcasting_android.data.models.User?,
     onBackClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onSettingClick: (String) -> Unit,
     onTestConnectionClick: () -> Unit,
     onSignOutClick: () -> Unit
 ) {
+    // Debug logging
+    LaunchedEffect(currentUser) {
+        println("🔐 DEBUG: ProfileScreen - Received user: ${currentUser?.fullName ?: "null"}")
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,7 +118,7 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "John Doe",
+                                text = currentUser?.fullName ?: "User",
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = TextPrimary,
                                 fontWeight = FontWeight.Bold
@@ -168,7 +173,7 @@ fun ProfileScreen(
                         // Email
                         ContactInfoRow(
                             icon = Icons.Default.Email,
-                            value = "john.doe@email.com",
+                            value = currentUser?.email ?: "No email provided",
                             label = "Email"
                         )
                         
@@ -177,7 +182,7 @@ fun ProfileScreen(
                         // Phone
                         ContactInfoRow(
                             icon = Icons.Default.Phone,
-                            value = "+1 (555) 123-4567",
+                            value = currentUser?.phone ?: "No phone provided",
                             label = "Phone"
                         )
                         
@@ -186,7 +191,7 @@ fun ProfileScreen(
                         // Location
                         ContactInfoRow(
                             icon = Icons.Default.LocationOn,
-                            value = "New York, NY",
+                            value = currentUser?.location ?: "No location provided",
                             label = "Location"
                         )
                     }
