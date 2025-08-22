@@ -12,11 +12,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.virabroadcasting_android.ui.screens.*
 import com.example.virabroadcasting_android.ui.components.ViraBottomNavigation
 
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import com.example.virabroadcasting_android.data.models.NewsArticle
+import com.example.virabroadcasting_android.DetailActivity
+
 @Composable
 fun ViraNavigation() {
     val navController = rememberNavController()
     var currentRoute by remember { mutableStateOf("splash") }
-    
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -31,7 +37,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Login Screen
         composable("login") {
             LoginScreen(
@@ -53,7 +59,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Create Account Screen
         composable("create_account") {
             CreateAccountScreen(
@@ -70,7 +76,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Main App with Bottom Navigation
         composable("home") {
             MainAppScreen(
@@ -92,8 +98,13 @@ fun ViraNavigation() {
                 onNotificationClick = {
                     navController.navigate("alerts")
                 },
-                onNewsItemClick = { newsId ->
-                    // Handle news item click
+                onNewsItemClick = { article: NewsArticle ->
+
+                    val intent = Intent(context, DetailActivity::class.java).apply {
+                        putExtra("title", article.title)
+                        putExtra("content", article.content)
+                    }
+                    context.startActivity(intent)
                 },
                 onSignOut = {
                     // Navigate to login and clear the entire back stack
@@ -103,7 +114,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Search Screen
         composable("search") {
             SearchScreen(
@@ -118,7 +129,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Alerts Screen
         composable("alerts") {
             AlertsScreen(
@@ -136,7 +147,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Profile Screen
         composable("profile") {
             ProfileScreen(
@@ -160,7 +171,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Test Connection Screen
         composable("test_connection") {
             TestConnectionScreen(
@@ -178,7 +189,7 @@ fun MainAppScreen(
     onNavigate: (String) -> Unit,
     onProfileClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    onNewsItemClick: (String) -> Unit,
+    onNewsItemClick: (NewsArticle) -> Unit,
     onSignOut: () -> Unit
 ) {
     Scaffold(
