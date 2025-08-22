@@ -12,6 +12,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.virabroadcasting_android.ui.screens.*
 import com.example.virabroadcasting_android.ui.components.ViraBottomNavigation
 
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import com.example.virabroadcasting_android.data.models.NewsArticle
+import com.example.virabroadcasting_android.DetailActivity
+
 @Composable
 fun ViraNavigation() {
     val navController = rememberNavController()
@@ -19,7 +24,7 @@ fun ViraNavigation() {
     
     // Use the singleton UserRepository directly
     val userRepository = com.example.virabroadcasting_android.data.repository.UserRepository
-    
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -34,7 +39,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Login Screen
         composable("login") {
             LoginScreen(
@@ -56,7 +61,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Create Account Screen
         composable("create_account") {
             CreateAccountScreen(
@@ -75,7 +80,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Main App with Bottom Navigation
         composable("home") {
             MainAppScreen(
@@ -97,8 +102,16 @@ fun ViraNavigation() {
                 onNotificationClick = {
                     navController.navigate("alerts")
                 },
-                onNewsItemClick = { newsId ->
-                    // Handle news item click
+                onNewsItemClick = { article: NewsArticle ->
+                    val intent = Intent(context, DetailActivity::class.java).apply {
+                        putExtra("title", article.title)
+                        putExtra("content", article.content)
+                        putExtra("author", article.author)
+                        putExtra("publishDate", article.publishDate)
+                        putExtra("category", article.category)
+                        putExtra("imageUrl", article.imageUrl ?: "")
+                    }
+                    context.startActivity(intent)
                 },
                 onSignOut = {
                     // Clear user data and navigate to login
@@ -110,7 +123,7 @@ fun ViraNavigation() {
                 userRepository = userRepository
             )
         }
-        
+
         // Search Screen
         composable("search") {
             SearchScreen(
@@ -125,7 +138,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Alerts Screen
         composable("alerts") {
             AlertsScreen(
@@ -143,7 +156,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Profile Screen
         composable("profile") {
             ProfileScreen(
@@ -169,7 +182,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Test Connection Screen
         composable("test_connection") {
             TestConnectionScreen(
@@ -178,7 +191,7 @@ fun ViraNavigation() {
                 }
             )
         }
-        
+
         // Edit Profile Screen
         composable("edit_profile") {
             EditProfileScreen(
@@ -203,7 +216,7 @@ fun MainAppScreen(
     onNavigate: (String) -> Unit,
     onProfileClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    onNewsItemClick: (String) -> Unit,
+    onNewsItemClick: (NewsArticle) -> Unit,
     onSignOut: () -> Unit,
     userRepository: com.example.virabroadcasting_android.data.repository.UserRepository
 ) {

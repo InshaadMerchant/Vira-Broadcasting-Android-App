@@ -1,37 +1,13 @@
 package com.example.virabroadcasting_android.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,39 +17,47 @@ import com.example.virabroadcasting_android.di.NetworkModule
 import com.example.virabroadcasting_android.ui.components.*
 import com.example.virabroadcasting_android.ui.theme.*
 import com.example.virabroadcasting_android.ui.viewmodels.HomeViewModel
+import com.example.virabroadcasting_android.data.models.NewsArticle
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+
 
 @Composable
 fun HomeScreen(
     onProfileClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    onNewsItemClick: (String) -> Unit
+    onNewsItemClick: (NewsArticle) -> Unit
 ) {
     // Initialize ViewModel
     val viewModel = remember { HomeViewModel(NetworkModule.newsRepository) }
-    
+
     // Collect state from ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val newsArticles by viewModel.newsArticles.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val selectedCategory by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    
+
     // LazyListState for infinite scroll
     val listState = rememberLazyListState()
     
+
+
     // Infinite scroll effect
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo }
             .collect { visibleItems ->
                 val lastVisibleItem = visibleItems.lastOrNull()
-                if (lastVisibleItem != null && 
-                    lastVisibleItem.index >= newsArticles.size - 3 && 
-                    !uiState.isLoadingMore) {
+                if (lastVisibleItem != null &&
+                    lastVisibleItem.index >= newsArticles.size - 3 &&
+                    !uiState.isLoadingMore
+                ) {
                     viewModel.loadMoreNews()
                 }
             }
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,9 +70,11 @@ fun HomeScreen(
             onProfileClick = onProfileClick,
             showNotificationIcon = true,
             onNotificationClick = onNotificationClick,
+            showRefreshIcon = true,
+            onRefreshClick = { viewModel.refreshNews() },
             unreadCount = 2
         )
-        
+
         // Search Bar
         ViraSearchBar(
             value = searchQuery,
@@ -96,7 +82,7 @@ fun HomeScreen(
             placeholder = "Search news...",
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
-        
+
         // Category Tabs
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -111,8 +97,8 @@ fun HomeScreen(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
-            
-            // Dynamic categories from WordPress
+
+            // Dynamic categories
             items(categories) { category ->
                 ViraCategoryChip(
                     text = category.name,
@@ -123,9 +109,9 @@ fun HomeScreen(
                 )
             }
         }
-        
-        // Content
-        Box(modifier = Modifier.fillMaxSize()) {
+
+        // Content area
+        Column {
             if (uiState.isLoading && newsArticles.isEmpty()) {
                 // Loading state
                 Column(
@@ -196,10 +182,10 @@ fun HomeScreen(
                             category = article.category,
                             date = article.publishDate,
                             imageUrl = article.imageUrl,
-                            onClick = { onNewsItemClick(article.id) }
+                            onClick = { onNewsItemClick(article) } // Pass full article
                         )
                     }
-                    
+
                     // Loading more indicator
                     if (uiState.isLoadingMore) {
                         item {
@@ -222,14 +208,13 @@ fun HomeScreen(
                     }
                 }
             }
-            
-            // Error message overlay
+
+            // Error overlay
             if (uiState.error != null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .align(Alignment.TopCenter)
                 ) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
@@ -263,6 +248,7 @@ fun HomeScreen(
                     }
                 }
             }
+            
         }
     }
 }

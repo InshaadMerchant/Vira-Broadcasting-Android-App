@@ -182,6 +182,9 @@ class HomeViewModel(
         currentPage = 1
         hasMorePages = true
         
+        // Clear cache to force fresh data
+        newsRepository.clearCache()
+        
         // Reload current selection
         selectCategory(_selectedCategory.value)
     }

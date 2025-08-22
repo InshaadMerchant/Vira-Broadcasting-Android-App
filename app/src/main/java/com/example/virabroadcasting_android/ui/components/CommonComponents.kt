@@ -59,6 +59,8 @@ fun ViraHeader(
     onFilterClick: (() -> Unit)? = null,
     showSettingsIcon: Boolean = false,
     onSettingsClick: (() -> Unit)? = null,
+    showRefreshIcon: Boolean = false,
+    onRefreshClick: (() -> Unit)? = null,
     unreadCount: Int = 0
 ) {
     Row(
@@ -154,6 +156,18 @@ fun ViraHeader(
                 modifier = Modifier
                     .size(24.dp)
                     .clickable { onSettingsClick?.invoke() },
+                tint = TextPrimary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+        
+        if (showRefreshIcon) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Refresh",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { onRefreshClick?.invoke() },
                 tint = TextPrimary
             )
             Spacer(modifier = Modifier.width(16.dp))
