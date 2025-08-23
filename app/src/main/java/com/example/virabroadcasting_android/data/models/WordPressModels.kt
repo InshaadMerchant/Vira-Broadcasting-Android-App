@@ -35,7 +35,7 @@ data class WordPressPost(
     val displayExcerpt: String get() = excerpt.rendered
     val featuredImageUrl: String? get() = _embedded?.wpFeaturedmedia?.firstOrNull()?.sourceUrl
     val authorName: String? get() = _embedded?.author?.firstOrNull()?.name
-    val categoryNames: List<String> get() = _embedded?.wpTerm?.map { it.name } ?: emptyList()
+    val categoryNames: List<String> get() = _embedded?.wpTerm?.flatten()?.map { it.name } ?: emptyList()
 }
 
 data class Guid(
@@ -59,7 +59,8 @@ data class Excerpt(
 data class Embedded(
     val author: List<Author>? = null,
     val wpFeaturedmedia: List<FeaturedMedia>? = null,
-    val wpTerm: List<Category>? = null
+    @SerializedName("wp:term")
+    val wpTerm: List<List<Category>>? = null
 )
 
 data class Author(

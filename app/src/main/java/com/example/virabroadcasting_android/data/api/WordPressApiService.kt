@@ -9,7 +9,8 @@ import retrofit2.http.Query
 interface WordPressApiService {
     
     // Get all posts with pagination
-    @GET("wp/v2/posts")
+    @GET("wp/v2/posts?_embed")
+
     suspend fun getPosts(
         @Query("page") page: Int = 1,
         @Query("per_page") perPage: Int = 10,
