@@ -42,11 +42,13 @@ fun ViraNavigation() {
 
         // Login Screen
         composable("login") {
+            currentRoute = "login"
             LoginScreen(
                 onLoginClick = {
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
+                    currentRoute = "home"
                 },
                 onSignUpClick = {
                     navController.navigate("create_account")
@@ -83,6 +85,7 @@ fun ViraNavigation() {
 
         // Main App with Bottom Navigation
         composable("home") {
+            currentRoute = "home"
             MainAppScreen(
                 currentRoute = currentRoute,
                 onNavigate = { route ->
