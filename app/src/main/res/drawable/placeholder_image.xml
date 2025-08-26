@@ -7,33 +7,26 @@
     
     <!-- Background -->
     <path
-        android:fillColor="#F7FAFC"
-        android:pathData="M0,0h200v200h-200z" />
+        android:fillColor="#F5F5F5"
+        android:pathData="M0,0h200v200h-200z"/>
     
     <!-- Image icon -->
     <path
-        android:fillColor="#E2E8F0"
-        android:pathData="M60,50h80c5.52,0 10,4.48 10,10v80c0,5.52 -4.48,10 -10,10h-80c-5.52,0 -10,-4.48 -10,-10v-80c0,-5.52 4.48,-10 10,-10z" />
+        android:fillColor="#CCCCCC"
+        android:pathData="M60,40h80c11,0 20,9 20,20v80c0,11 -9,20 -20,20h-80c-11,0 -20,-9 -20,-20v-80c0,-11 9,-20 20,-20z"/>
     
-    <!-- Image lines -->
+    <!-- Image icon details -->
     <path
-        android:strokeColor="#CBD5E0"
-        android:strokeWidth="2"
-        android:pathData="M70,70l20,20l15,-15l15,15l20,-20" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,50h60c5.5,0 10,4.5 10,10v60c0,5.5 -4.5,10 -10,10h-60c-5.5,0 -10,-4.5 -10,-10v-60c0,-5.5 4.5,-10 10,-10z"/>
     
-    <!-- Camera icon -->
+    <!-- Mountain shapes -->
     <path
-        android:fillColor="#A0AEC0"
-        android:pathData="M85,85m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+        android:fillColor="#E0E0E0"
+        android:pathData="M75,90l15,-20l15,20l15,-15l15,15v25h-60z"/>
     
-    <!-- Text -->
-    <text
-        android:fontFamily="sans-serif-medium"
-        android:textSize="12sp"
-        android:textColor="#718096"
-        android:text="No Image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="120dp" />
+    <!-- Sun -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M120,60m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
 </vector>

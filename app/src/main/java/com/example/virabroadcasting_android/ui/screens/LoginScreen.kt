@@ -30,7 +30,7 @@ import com.example.virabroadcasting_android.ui.theme.*
 
 @Composable
 fun LoginScreen(
-    onLoginClick: () -> Unit,
+    onLoginClick: (String, String) -> Unit,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onBackClick: () -> Unit
@@ -105,7 +105,7 @@ fun LoginScreen(
             onClick = {
                 isLoading = true
                 // Simulate login process
-                onLoginClick()
+                onLoginClick(email, password)
             },
             isLoading = isLoading,
             modifier = Modifier.padding(bottom = 16.dp)

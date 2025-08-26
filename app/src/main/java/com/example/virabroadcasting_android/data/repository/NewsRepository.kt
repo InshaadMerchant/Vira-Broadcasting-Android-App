@@ -31,8 +31,22 @@ class NewsRepository(
                 println("🔍 DEBUG: First post ID: ${posts.firstOrNull()?.id}")
                 println("🔍 DEBUG: First post title: ${posts.firstOrNull()?.displayTitle}")
                 
+                // Debug first post's embedded data
+                posts.firstOrNull()?.let { firstPost ->
+                    println("🔍 DEBUG: First post featured media ID: ${firstPost.featuredMedia}")
+                    println("🔍 DEBUG: First post has embedded: ${firstPost._embedded != null}")
+                    println("🔍 DEBUG: First post embedded featured media: ${firstPost._embedded?.wpFeaturedmedia}")
+                    println("🔍 DEBUG: First post featured image URL: ${firstPost.featuredImageUrl}")
+                }
+                
                 val articles = posts.map { it.toNewsArticle() }
                 println("🔍 DEBUG: Converted to ${articles.size} articles")
+                
+                // Debug image URLs
+                articles.forEachIndexed { index, article ->
+                    println("🔍 DEBUG: Article $index - Title: ${article.title}")
+                    println("🔍 DEBUG: Article $index - Image URL: ${article.imageUrl}")
+                }
                 
                 // Cache the results
                 val cacheKey = "latest_$page"
@@ -183,6 +197,12 @@ class NewsRepository(
         } catch (e: Exception) {
             modified
         }
+        
+        // Debug featured media
+        println("🔍 DEBUG: Post ID ${id} - Featured Media ID: $featuredMedia")
+        println("🔍 DEBUG: Post ID ${id} - Has Embedded: ${_embedded != null}")
+        println("🔍 DEBUG: Post ID ${id} - Featured Media Count: ${_embedded?.wpFeaturedmedia?.size ?: 0}")
+        println("🔍 DEBUG: Post ID ${id} - Featured Image URL: $featuredImageUrl")
         
         return NewsArticle(
             id = id.toString(),

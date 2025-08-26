@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.*
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -425,7 +426,7 @@ fun ViraNewsCard(
             modifier = Modifier.padding(16.dp)
         ) {
             // Image section (if available)
-            if (imageUrl != null) {
+            if (!imageUrl.isNullOrBlank()) {
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = "News image",
@@ -434,7 +435,6 @@ fun ViraNewsCard(
                         .height(200.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = R.drawable.placeholder_image),
                     error = painterResource(id = R.drawable.placeholder_image)
                 )
                 Spacer(modifier = Modifier.height(12.dp))

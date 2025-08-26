@@ -33,55 +33,14 @@ fun ViraNavigation() {
         composable("splash") {
             SplashScreen(
                 onSplashComplete = {
-                    navController.navigate("login") {
+                    navController.navigate("home") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
             )
         }
 
-        // Login Screen
-        composable("login") {
-            currentRoute = "login"
-            LoginScreen(
-                onLoginClick = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                    currentRoute = "home"
-                },
-                onSignUpClick = {
-                    navController.navigate("create_account")
-                },
-                onForgotPasswordClick = {
-                    // Handle forgot password
-                },
-                onBackClick = {
-                    navController.navigate("splash") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
-            )
-        }
 
-        // Create Account Screen
-        composable("create_account") {
-            CreateAccountScreen(
-                onCreateAccountClick = { fullName, email, phone, location ->
-                    // Create user and save to repository
-                    userRepository.createUser(fullName, email, phone, location)
-                    navController.navigate("home") {
-                        popUpTo("create_account") { inclusive = true }
-                    }
-                },
-                onSignInClick = {
-                    navController.popBackStack()
-                },
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
 
         // Main App with Bottom Navigation
         composable("home") {
@@ -117,11 +76,8 @@ fun ViraNavigation() {
                     context.startActivity(intent)
                 },
                 onSignOut = {
-                    // Clear user data and navigate to login
+                    // Clear user data and stay on current screen
                     userRepository.clearUser()
-                    navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
-                    }
                 },
                 userRepository = userRepository
             )
@@ -177,11 +133,15 @@ fun ViraNavigation() {
                     navController.navigate("test_connection")
                 },
                 onSignOutClick = {
-                    // Clear user data and navigate to login
+                    // Clear user data and navigate back to profile
                     userRepository.clearUser()
-                    navController.navigate("login") {
-                        popUpTo(0) { inclusive = true }
-                    }
+                    navController.popBackStack()
+                },
+                onLoginClick = {
+                    navController.navigate("login")
+                },
+                onSignUpClick = {
+                    navController.navigate("create_account")
                 }
             )
         }
@@ -206,6 +166,42 @@ fun ViraNavigation() {
                     println("🔐 DEBUG: Navigation - Saving profile: $fullName, $email, $phone, $location")
                     userRepository.updateUserProfile(fullName, email, phone, location)
                     println("🔐 DEBUG: Navigation - Profile saved, navigating back")
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Login Screen (inside Profile section)
+        composable("login") {
+            LoginScreen(
+                onLoginClick = { email, password ->
+                    // Handle login logic here
+                    navController.popBackStack()
+                },
+                onSignUpClick = {
+                    navController.navigate("create_account")
+                },
+                onForgotPasswordClick = {
+                    // Handle forgot password
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Create Account Screen (inside Profile section)
+        composable("create_account") {
+            CreateAccountScreen(
+                onCreateAccountClick = { fullName, email, phone, location ->
+                    // Create user and save to repository
+                    userRepository.createUser(fullName, email, phone, location)
+                    navController.popBackStack()
+                },
+                onSignInClick = {
+                    navController.popBackStack()
+                },
+                onBackClick = {
                     navController.popBackStack()
                 }
             )
@@ -261,7 +257,9 @@ fun MainAppScreen(
                     onEditProfileClick = { /* Will be handled by navigation */ },
                     onSettingClick = { /* Handle setting */ },
                     onTestConnectionClick = { /* Will be handled by navigation */ },
-                    onSignOutClick = onSignOut
+                    onSignOutClick = onSignOut,
+                    onLoginClick = { /* Will be handled by navigation */ },
+                    onSignUpClick = { /* Will be handled by navigation */ }
                 )
             }
         }

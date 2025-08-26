@@ -177,6 +177,12 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(newsArticles) { article ->
+                        // Debug image URLs
+                        LaunchedEffect(article.id) {
+                            println("🔍 DEBUG: HomeScreen - Article: ${article.title}")
+                            println("🔍 DEBUG: HomeScreen - Image URL: ${article.imageUrl}")
+                        }
+                        
                         ViraNewsCard(
                             title = article.title,
                             category = article.category,
