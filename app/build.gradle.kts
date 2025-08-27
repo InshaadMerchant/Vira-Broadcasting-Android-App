@@ -85,6 +85,8 @@ dependencies {
     implementation("androidx.compose.material:material:1.6.3")
     implementation(libs.androidx.lifecycle.runtime.compose.android)
 
+    implementation("com.google.android.gms:play-services-ads:23.1.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

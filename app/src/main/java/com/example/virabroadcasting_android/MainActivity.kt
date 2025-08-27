@@ -11,9 +11,15 @@ import androidx.compose.ui.Modifier
 import com.example.virabroadcasting_android.ui.navigation.ViraNavigation
 import com.example.virabroadcasting_android.ui.theme.Virabroadcasting_androidTheme
 
+import com.google.android.gms.ads.MobileAds
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize AdMob
+        MobileAds.initialize(this) {}
         // enableEdgeToEdge() // Commented out to fix status bar overlap
         setContent {
             Virabroadcasting_androidTheme {

@@ -22,6 +22,8 @@ import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 
+import com.example.virabroadcasting_android.ui.components.BannerAd
+import androidx.compose.foundation.lazy.itemsIndexed
 
 @Composable
 fun HomeScreen(
@@ -109,6 +111,8 @@ fun HomeScreen(
                 )
             }
         }
+        BannerAd(adUnitId = "ca-app-pub-3940256099942544/6300978111") //change the unit id
+
 
         // Content area
         Column {
@@ -176,7 +180,7 @@ fun HomeScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(newsArticles) { article ->
+                    itemsIndexed(newsArticles) { index, article ->
                         // Debug image URLs
                         LaunchedEffect(article.id) {
                             println("🔍 DEBUG: HomeScreen - Article: ${article.title}")
@@ -190,6 +194,9 @@ fun HomeScreen(
                             imageUrl = article.imageUrl,
                             onClick = { onNewsItemClick(article) } // Pass full article
                         )
+                        if ((index + 1) % 3 == 0) {
+                            BannerAd(adUnitId = "ca-app-pub-3940256099942544/6300978111") // Test ID
+                        }
                     }
 
                     // Loading more indicator
