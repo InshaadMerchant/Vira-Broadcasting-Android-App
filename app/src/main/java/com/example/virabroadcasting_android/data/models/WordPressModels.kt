@@ -18,8 +18,11 @@ data class WordPressPost(
     val content: Content,
     val excerpt: Excerpt,
     val author: Int,
+    @SerializedName("featured_media")
     val featuredMedia: Int,
+    @SerializedName("comment_status")
     val commentStatus: String,
+    @SerializedName("ping_status")
     val pingStatus: String,
     val sticky: Boolean,
     val template: String,
@@ -27,6 +30,7 @@ data class WordPressPost(
     val meta: Map<String, Any>? = null,
     val categories: List<Int>,
     val tags: List<Int>,
+    @SerializedName("_embedded")
     val _embedded: Embedded? = null
 ) {
     // Helper properties for easy access
@@ -35,7 +39,7 @@ data class WordPressPost(
     val displayExcerpt: String get() = excerpt.rendered
     val featuredImageUrl: String? get() = _embedded?.wpFeaturedmedia?.firstOrNull()?.sourceUrl
     val authorName: String? get() = _embedded?.author?.firstOrNull()?.name
-    val categoryNames: List<String> get() = _embedded?.wpTerm?.flatten()?.map { it.name } ?: emptyList()
+    val categoryNames: List<String> get() = _embedded?.wpTerm?.firstOrNull()?.map { it.name } ?: emptyList()
 }
 
 data class Guid(
@@ -90,6 +94,18 @@ data class Category(
     val slug: String,
     val description: String,
     val count: Int
+)
+
+// Media model for direct media fetching
+data class Media(
+    val id: Int,
+    val date: String,
+    val slug: String,
+    val type: String,
+    val link: String,
+    val title: Title,
+    val sourceUrl: String,
+    val altText: String? = null
 )
 
 // WordPress API Response Models

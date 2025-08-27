@@ -402,6 +402,13 @@ fun ViraNewsCard(
     imageUrl: String? = null,
     onClick: () -> Unit
 ) {
+    // Enhanced debugging for image loading
+    println("🔍 DEBUG: ViraNewsCard - Title: $title")
+    println("🔍 DEBUG: ViraNewsCard - ImageUrl: $imageUrl")
+    println("🔍 DEBUG: ViraNewsCard - ImageUrl is null: ${imageUrl == null}")
+    println("🔍 DEBUG: ViraNewsCard - ImageUrl is blank: ${imageUrl?.isBlank()}")
+    println("🔍 DEBUG: ViraNewsCard - ImageUrl length: ${imageUrl?.length}")
+    
     val categoryColor = when (category.lowercase()) {
         "sports" -> androidx.compose.ui.graphics.Color(0xFF4CAF50) // Green
         "politics" -> androidx.compose.ui.graphics.Color(0xFF2196F3) // Blue
@@ -427,6 +434,7 @@ fun ViraNewsCard(
         ) {
             // Image section (if available)
             if (!imageUrl.isNullOrBlank()) {
+                println("🔍 DEBUG: ViraNewsCard - About to display image: $imageUrl")
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = "News image",
@@ -435,8 +443,32 @@ fun ViraNewsCard(
                         .height(200.dp)
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop,
-                    error = painterResource(id = R.drawable.placeholder_image)
+                    error = painterResource(id = R.drawable.placeholder_image),
+                    onError = { 
+                        println("🔍 DEBUG: ViraNewsCard - Image loading FAILED for: $imageUrl")
+                    },
+                    onSuccess = { 
+                        println("🔍 DEBUG: ViraNewsCard - Image loaded SUCCESSFULLY for: $imageUrl")
+                    }
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+            } else {
+                println("🔍 DEBUG: ViraNewsCard - No image URL provided - imageUrl: '$imageUrl'")
+                // Show a placeholder when no image is available
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(Color.LightGray, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = "No image available",
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                }
                 Spacer(modifier = Modifier.height(12.dp))
             }
             

@@ -24,6 +24,15 @@ import androidx.compose.ui.text.SpanStyle
 import android.content.Intent
 import android.text.Html as AndroidHtml
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Spacer
+import coil.compose.AsyncImage
+import androidx.compose.ui.draw.clip
 
 class DetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +127,30 @@ fun DetailScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
+            // Featured Image (if available)
+            if (imageUrl.isNotEmpty()) {
+                println("🔍 DEBUG: DetailScreen - Displaying featured image: $imageUrl")
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Featured image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(id = R.drawable.placeholder_image),
+                    onError = { 
+                        println("🔍 DEBUG: DetailScreen - Image loading failed for: $imageUrl")
+                    },
+                    onSuccess = { 
+                        println("🔍 DEBUG: DetailScreen - Image loaded successfully for: $imageUrl")
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            } else {
+                println("🔍 DEBUG: DetailScreen - No featured image available")
+            }
+            
             // Title
             Text(
                 text = title,

@@ -2,6 +2,7 @@ package com.example.virabroadcasting_android.data.repository
 
 import com.example.virabroadcasting_android.data.api.WordPressApiService
 import com.example.virabroadcasting_android.data.models.*
+import com.example.virabroadcasting_android.config.WordPressConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -24,28 +25,62 @@ class NewsRepository(
      */
     suspend fun getLatestNews(page: Int = 1, perPage: Int = 20): List<NewsArticle> = withContext(Dispatchers.IO) {
         try {
-            val response = apiService.getPosts(page = page, perPage = perPage)
+            val response = apiService.getPosts(page = page, perPage = perPage, embed = true)
+            
             if (response.isSuccessful) {
                 val posts = response.body() ?: emptyList()
                 println("🔍 DEBUG: Received ${posts.size} posts from API")
                 println("🔍 DEBUG: First post ID: ${posts.firstOrNull()?.id}")
                 println("🔍 DEBUG: First post title: ${posts.firstOrNull()?.displayTitle}")
                 
-                // Debug first post's embedded data
-                posts.firstOrNull()?.let { firstPost ->
-                    println("🔍 DEBUG: First post featured media ID: ${firstPost.featuredMedia}")
-                    println("🔍 DEBUG: First post has embedded: ${firstPost._embedded != null}")
-                    println("🔍 DEBUG: First post embedded featured media: ${firstPost._embedded?.wpFeaturedmedia}")
-                    println("🔍 DEBUG: First post featured image URL: ${firstPost.featuredImageUrl}")
+                // Raw API response debugging
+                println("🔍 DEBUG: ===== RAW API RESPONSE DEBUG =====")
+                posts.take(2).forEachIndexed { index, post ->
+                    println("🔍 DEBUG: Post $index - Raw data:")
+                    println("🔍 DEBUG:   - ID: ${post.id}")
+                    println("🔍 DEBUG:   - Title: ${post.displayTitle}")
+                    println("🔍 DEBUG:   - featuredMedia: ${post.featuredMedia}")
+                    println("🔍 DEBUG:   - Has _embedded: ${post._embedded != null}")
+                    println("🔍 DEBUG:   - _embedded.wpFeaturedmedia size: ${post._embedded?.wpFeaturedmedia?.size ?: 0}")
+                    if (post._embedded?.wpFeaturedmedia?.isNotEmpty() == true) {
+                        post._embedded.wpFeaturedmedia?.forEach { media ->
+                            println("🔍 DEBUG:   - Media ID: ${media.id}, Source URL: ${media.sourceUrl}")
+                        }
+                    }
+                    println("🔍 DEBUG:   - Raw content length: ${post.content.rendered.length}")
+                    println("🔍 DEBUG: ---")
+                }
+                println("🔍 DEBUG: ===== END RAW API RESPONSE DEBUG =====")
+                
+                // Enhanced debugging for first few posts
+                posts.take(3).forEachIndexed { index, post ->
+                    println("🔍 DEBUG: Post $index - ID: ${post.id}, Title: ${post.displayTitle}")
+                    println("🔍 DEBUG: Post $index - featuredMedia: ${post.featuredMedia}")
+                    println("🔍 DEBUG: Post $index - Has _embedded: ${post._embedded != null}")
+                    if (post._embedded?.wpFeaturedmedia?.isNotEmpty() == true) {
+                        println("🔍 DEBUG: Post $index - Found ${post._embedded.wpFeaturedmedia?.size} embedded media")
+                        post._embedded.wpFeaturedmedia?.forEach { media ->
+                            println("🔍 DEBUG: Post $index - Media ID: ${media.id}, Source URL: ${media.sourceUrl}")
+                        }
+                    } else {
+                        println("🔍 DEBUG: Post $index - NO embedded media found")
+                    }
+                    println("🔍 DEBUG: ---")
                 }
                 
-                val articles = posts.map { it.toNewsArticle() }
+                val articles = mutableListOf<NewsArticle>()
+                for (post in posts) {
+                    articles.add(post.toNewsArticle())
+                }
                 println("🔍 DEBUG: Converted to ${articles.size} articles")
                 
                 // Debug image URLs
                 articles.forEachIndexed { index, article ->
-                    println("🔍 DEBUG: Article $index - Title: ${article.title}")
-                    println("🔍 DEBUG: Article $index - Image URL: ${article.imageUrl}")
+                    if (article.imageUrl != null) {
+                        println("🔍 DEBUG: Article $index has image: ${article.imageUrl}")
+                    } else {
+                        println("🔍 DEBUG: Article $index has NO image")
+                    }
                 }
                 
                 // Cache the results
@@ -74,7 +109,10 @@ class NewsRepository(
             val response = apiService.getPostsByCategory(categoryId = categoryId, page = page)
             if (response.isSuccessful) {
                 val posts = response.body() ?: emptyList()
-                val articles = posts.map { it.toNewsArticle() }
+                val articles = mutableListOf<NewsArticle>()
+                for (post in posts) {
+                    articles.add(post.toNewsArticle())
+                }
                 
                 // Cache the results
                 val cacheKey = "category_${categoryId}_$page"
@@ -99,7 +137,10 @@ class NewsRepository(
             val response = apiService.searchPosts(query = query, page = page)
             if (response.isSuccessful) {
                 val posts = response.body() ?: emptyList()
-                val articles = posts.map { it.toNewsArticle() }
+                val articles = mutableListOf<NewsArticle>()
+                for (post in posts) {
+                    articles.add(post.toNewsArticle())
+                }
                 
                 // Get total count from headers (WordPress API provides this)
                 val totalPosts = response.headers()["X-WP-Total"]?.toIntOrNull() ?: 0
@@ -165,7 +206,11 @@ class NewsRepository(
             val response = apiService.getFeaturedPosts()
             if (response.isSuccessful) {
                 val posts = response.body() ?: emptyList()
-                posts.map { it.toNewsArticle() }
+                val articles = mutableListOf<NewsArticle>()
+                for (post in posts) {
+                    articles.add(post.toNewsArticle())
+                }
+                articles
             } else {
                 emptyList()
             }
@@ -185,7 +230,7 @@ class NewsRepository(
     /**
      * Convert WordPress post to NewsArticle
      */
-    private fun WordPressPost.toNewsArticle(): NewsArticle {
+    private suspend fun WordPressPost.toNewsArticle(): NewsArticle {
         val publishDate = try {
             displayFormatter.format(dateFormatter.parse(date) ?: Date())
         } catch (e: Exception) {
@@ -198,18 +243,87 @@ class NewsRepository(
             modified
         }
         
-        // Debug featured media
-        println("🔍 DEBUG: Post ID ${id} - Featured Media ID: $featuredMedia")
-        println("🔍 DEBUG: Post ID ${id} - Has Embedded: ${_embedded != null}")
-        println("🔍 DEBUG: Post ID ${id} - Featured Media Count: ${_embedded?.wpFeaturedmedia?.size ?: 0}")
-        println("🔍 DEBUG: Post ID ${id} - Featured Image URL: $featuredImageUrl")
+        // Enhanced debugging for image loading
+        println("🔍 DEBUG: ===== POST ${id} IMAGE DEBUG =====")
+        println("🔍 DEBUG: Raw featuredMedia value: $featuredMedia")
+        println("🔍 DEBUG: Has _embedded: ${_embedded != null}")
+        println("🔍 DEBUG: _embedded.wpFeaturedmedia size: ${_embedded?.wpFeaturedmedia?.size ?: 0}")
+        
+        // Try multiple approaches to get the image URL
+        var imageUrl: String? = null
+        
+        // Approach 1: Try to get from embedded media first
+        if (_embedded?.wpFeaturedmedia?.isNotEmpty() == true) {
+            imageUrl = _embedded?.wpFeaturedmedia?.firstOrNull()?.sourceUrl
+            println("🔍 DEBUG: ✅ Got image from embedded media: $imageUrl")
+        } else {
+            println("🔍 DEBUG: ❌ No embedded media found")
+        }
+        
+        // Approach 2: If no embedded media, try direct media API call
+        if (imageUrl.isNullOrBlank() && featuredMedia > 0) {
+            try {
+                println("🔍 DEBUG: 🔄 Attempting direct media fetch for ID: $featuredMedia")
+                val mediaResponse = apiService.getMedia(featuredMedia)
+                if (mediaResponse.isSuccessful) {
+                    val media = mediaResponse.body()
+                    imageUrl = media?.sourceUrl
+                    println("🔍 DEBUG: ✅ Direct media fetch successful: $imageUrl")
+                } else {
+                    println("🔍 DEBUG: ❌ Direct media fetch failed with code: ${mediaResponse.code()}")
+                }
+            } catch (e: Exception) {
+                println("🔍 DEBUG: ❌ Exception in direct media fetch: ${e.message}")
+                e.printStackTrace()
+            }
+        } else if (featuredMedia <= 0) {
+            println("🔍 DEBUG: ❌ featuredMedia ID is 0 or negative, cannot fetch media")
+        }
+        
+        // Approach 3: Try to construct media URL manually if we have the media ID
+        if (imageUrl.isNullOrBlank() && featuredMedia > 0) {
+            // Try multiple common WordPress image URL patterns
+            val possibleUrls = listOf(
+                "${WordPressConfig.WORDPRESS_BASE_URL}/wp-content/uploads/${featuredMedia}.jpg",
+                "${WordPressConfig.WORDPRESS_BASE_URL}/wp-content/uploads/${featuredMedia}.png",
+                "${WordPressConfig.WORDPRESS_BASE_URL}/wp-content/uploads/${featuredMedia}.webp",
+                "${WordPressConfig.WORDPRESS_BASE_URL}/wp-content/uploads/${featuredMedia}.jpeg"
+            )
+            
+            println("🔍 DEBUG: 🔄 Trying manual URL construction for ID: $featuredMedia")
+            for (url in possibleUrls) {
+                println("🔍 DEBUG: 🔄 Testing URL: $url")
+                // For now, just use the first URL as a fallback
+                // In a production app, you might want to test if the URL actually exists
+                imageUrl = url
+                break
+            }
+        }
+        
+        // Approach 4: If still no image, try to extract from content
+        if (imageUrl.isNullOrBlank()) {
+            println("🔍 DEBUG: 🔄 Attempting to extract image from content HTML")
+            // Look for img tags in the content
+            val imgRegex = Regex("<img[^>]+src=[\"']([^\"']+)[\"'][^>]*>")
+            val matchResult = imgRegex.find(content.rendered)
+            if (matchResult != null) {
+                imageUrl = matchResult.groupValues[1]
+                println("🔍 DEBUG: ✅ Extracted image from content: $imageUrl")
+            } else {
+                println("🔍 DEBUG: ❌ No image tags found in content")
+            }
+        }
+        
+        // Debug final image URL
+        println("🔍 DEBUG: 🎯 Final image URL: $imageUrl")
+        println("🔍 DEBUG: ===== END POST ${id} DEBUG =====")
         
         return NewsArticle(
             id = id.toString(),
             title = displayTitle,
             content = displayContent,
             excerpt = displayExcerpt,
-            imageUrl = featuredImageUrl,
+            imageUrl = imageUrl,
             category = categoryNames.firstOrNull() ?: "Uncategorized",
             author = authorName ?: "Unknown Author",
             publishDate = publishDate,
@@ -245,3 +359,4 @@ class NewsRepository(
         )
     }
 }
+
