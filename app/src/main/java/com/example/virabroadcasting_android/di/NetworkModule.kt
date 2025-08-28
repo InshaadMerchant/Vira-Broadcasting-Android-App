@@ -2,6 +2,7 @@ package com.example.virabroadcasting_android.di
 
 import com.example.virabroadcasting_android.config.WordPressConfig
 import com.example.virabroadcasting_android.data.api.WordPressApiService
+import com.example.virabroadcasting_android.data.api.WordPressAuthService
 import com.example.virabroadcasting_android.data.repository.NewsRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -37,6 +38,9 @@ object NetworkModule {
     
     // WordPress API Service
     val wordPressApiService: WordPressApiService = retrofit.create(WordPressApiService::class.java)
+    
+    // WordPress Authentication Service
+    val wordPressAuthService: WordPressAuthService = retrofit.create(WordPressAuthService::class.java)
     
     // News Repository
     val newsRepository: NewsRepository = NewsRepository(wordPressApiService)

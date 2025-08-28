@@ -9,6 +9,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import com.example.virabroadcasting_android.ui.screens.*
 import com.example.virabroadcasting_android.ui.components.ViraBottomNavigation
 
@@ -16,15 +18,19 @@ import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import com.example.virabroadcasting_android.data.models.NewsArticle
 import com.example.virabroadcasting_android.DetailActivity
+import com.example.virabroadcasting_android.di.NetworkModule
 
 @Composable
 fun ViraNavigation() {
     val navController = rememberNavController()
     var currentRoute by remember { mutableStateOf("splash") }
     
-    // Use the singleton UserRepository directly
-    val userRepository = com.example.virabroadcasting_android.data.repository.UserRepository
+    // Use the AuthRepository for WordPress authentication
+    val authRepository = remember { 
+        com.example.virabroadcasting_android.data.repository.AuthRepository(NetworkModule.wordPressAuthService)
+    }
     val context = LocalContext.current
+    
     NavHost(
         navController = navController,
         startDestination = "splash"
@@ -39,8 +45,6 @@ fun ViraNavigation() {
                 }
             )
         }
-
-
 
         // Main App with Bottom Navigation
         composable("home") {
@@ -76,10 +80,10 @@ fun ViraNavigation() {
                     context.startActivity(intent)
                 },
                 onSignOut = {
-                    // Clear user data and stay on current screen
-                    userRepository.clearUser()
+                    // Sign out user and stay on current screen
+                    authRepository.signOut()
                 },
-                userRepository = userRepository
+                authRepository = authRepository
             )
         }
 
@@ -119,7 +123,6 @@ fun ViraNavigation() {
         // Profile Screen
         composable("profile") {
             ProfileScreen(
-                currentUser = userRepository.getUser(),
                 onBackClick = {
                     navController.popBackStack()
                 },
@@ -133,16 +136,16 @@ fun ViraNavigation() {
                     navController.navigate("test_connection")
                 },
                 onSignOutClick = {
-                    // Clear user data and navigate back to profile
-                    userRepository.clearUser()
-                    navController.popBackStack()
+                    // Sign out user and stay on profile screen
+                    authRepository.signOut()
                 },
                 onLoginClick = {
                     navController.navigate("login")
                 },
                 onSignUpClick = {
                     navController.navigate("create_account")
-                }
+                },
+                authRepository = authRepository
             )
         }
 
@@ -157,16 +160,26 @@ fun ViraNavigation() {
 
         // Edit Profile Screen
         composable("edit_profile") {
+            val coroutineScope = rememberCoroutineScope()
+            
             EditProfileScreen(
-                currentUser = userRepository.getUser(),
+                currentUser = null, // Will be updated to use WordPress user data
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onSaveProfile = { fullName, email, phone, location ->
-                    println("🔐 DEBUG: Navigation - Saving profile: $fullName, $email, $phone, $location")
-                    userRepository.updateUserProfile(fullName, email, phone, location)
-                    println("🔐 DEBUG: Navigation - Profile saved, navigating back")
-                    navController.popBackStack()
+                    // Update WordPress user profile
+                    coroutineScope.launch {
+                        authRepository.updateUserProfile(
+                            name = fullName,
+                            email = email,
+                            meta = mapOf(
+                                "phone" to phone,
+                                "location" to location
+                            )
+                        )
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -174,19 +187,14 @@ fun ViraNavigation() {
         // Login Screen (inside Profile section)
         composable("login") {
             LoginScreen(
-                onLoginClick = { email, password ->
-                    // Handle login logic here
+                onLoginSuccess = {
+                    // Navigate back to profile after successful login
                     navController.popBackStack()
-                },
-                onSignUpClick = {
-                    navController.navigate("create_account")
-                },
-                onForgotPasswordClick = {
-                    // Handle forgot password
                 },
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
+                authRepository = authRepository
             )
         }
 
@@ -194,12 +202,11 @@ fun ViraNavigation() {
         composable("create_account") {
             CreateAccountScreen(
                 onCreateAccountClick = { fullName, email, phone, location ->
-                    // Create user and save to repository
-                    userRepository.createUser(fullName, email, phone, location)
+                    // For now, just navigate back - WordPress user creation requires admin setup
                     navController.popBackStack()
                 },
                 onSignInClick = {
-                    navController.popBackStack()
+                    navController.navigate("login")
                 },
                 onBackClick = {
                     navController.popBackStack()
@@ -217,7 +224,7 @@ fun MainAppScreen(
     onNotificationClick: () -> Unit,
     onNewsItemClick: (NewsArticle) -> Unit,
     onSignOut: () -> Unit,
-    userRepository: com.example.virabroadcasting_android.data.repository.UserRepository
+    authRepository: com.example.virabroadcasting_android.data.repository.AuthRepository
 ) {
     Scaffold(
         bottomBar = {
@@ -252,14 +259,14 @@ fun MainAppScreen(
             }
             "profile" -> {
                 ProfileScreen(
-                    currentUser = userRepository.getUser(),
                     onBackClick = { onNavigate("home") },
                     onEditProfileClick = { /* Will be handled by navigation */ },
                     onSettingClick = { /* Handle setting */ },
                     onTestConnectionClick = { /* Will be handled by navigation */ },
                     onSignOutClick = onSignOut,
                     onLoginClick = { /* Will be handled by navigation */ },
-                    onSignUpClick = { /* Will be handled by navigation */ }
+                    onSignUpClick = { /* Will be handled by navigation */ },
+                    authRepository = authRepository
                 )
             }
         }
